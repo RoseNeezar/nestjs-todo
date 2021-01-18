@@ -30,16 +30,23 @@ export class TasksController {
   @Get()
   getTasks(
     @Query(ValidationPipe) filterDto: GetTasksFilterDto,
+    @GetUser() user: User,
   ): Promise<Task[]> {
-    return this.taskService.getTasks(filterDto);
+    return this.taskService.getTasks(filterDto, user);
   }
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Promise<Task | undefined> {
-    return this.taskService.getTaskById(id);
+  getTaskById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<Task | undefined> {
+    return this.taskService.getTaskById(id, user);
   }
   @Delete('/:id')
-  deleteTaskById(@Param('id') id: string): Promise<void> {
-    return this.taskService.deleteTaskById(id);
+  deleteTaskById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.taskService.deleteTaskById(id, user);
   }
   @Post()
   @UsePipes(ValidationPipe)
@@ -53,7 +60,8 @@ export class TasksController {
   updateTaskStatus(
     @Param('id') id: string,
     @Body('status', TaskStatusValidationPipe) status: TaskStatus,
+    @GetUser() user: User,
   ): Promise<Task | undefined> {
-    return this.taskService.updateTaskStatus(id, status);
+    return this.taskService.updateTaskStatus(id, status, user);
   }
 }

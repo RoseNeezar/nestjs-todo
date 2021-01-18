@@ -8,11 +8,11 @@ import { User } from './user.entity';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
-  async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
     const { search, status } = filterDto;
 
     const query = this.createQueryBuilder('task');
-
+    query.where('task.userId = :userId', { userId: user.id });
     if (status) {
       query.andWhere('task.status = :status', { status });
     }
@@ -45,11 +45,8 @@ export class TaskRepository extends Repository<Task> {
     return res;
   }
 
-  async deleteTaskById(id: string): Promise<void> {
-    const result = await this.createQueryBuilder()
-      .delete()
-      .where('id = :id', { id: id })
-      .execute();
+  async deleteTaskById(id: string, user: User): Promise<void> {
+    const result = await this.delete({ id, userId: user.id });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Task with ID ${id} not found`);
