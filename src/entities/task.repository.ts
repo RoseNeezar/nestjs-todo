@@ -4,6 +4,7 @@ import { GetTasksFilterDto } from 'src/tasks/dto/get-task.dto';
 import { TaskStatus } from 'src/tasks/task.enum';
 import { EntityRepository, Repository } from 'typeorm';
 import { Task } from './task.entity';
+import { User } from './user.entity';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
@@ -26,16 +27,22 @@ export class TaskRepository extends Repository<Task> {
     return tasks;
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(
+    createTaskDto: CreateTaskDto,
+    user: User,
+  ): Promise<Partial<Task>> {
     const { description, title } = createTaskDto;
-    const task = new Task();
-    task.title = title;
-    task.description = description;
-    task.status = TaskStatus.OPEN;
+    const task: Partial<Task> = {
+      title,
+      description,
+      status: TaskStatus.OPEN,
+      user,
+    };
 
-    await task.save();
+    const result = await Task.create(task).save();
+    const { ['user']: _, ...res } = result;
 
-    return task;
+    return res;
   }
 
   async deleteTaskById(id: string): Promise<void> {

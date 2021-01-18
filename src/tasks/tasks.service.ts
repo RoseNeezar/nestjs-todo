@@ -8,6 +8,7 @@ import { Task } from 'src/entities/task.entity';
 import isUuid from 'is-uuid';
 import { TaskStatus } from './task.enum';
 import { GetTasksFilterDto } from './dto/get-task.dto';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -43,8 +44,11 @@ export class TasksService {
     this.taskRepository.deleteTaskById(id);
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.taskRepository.createTask(createTaskDto);
+  async createTask(
+    createTaskDto: CreateTaskDto,
+    user: User,
+  ): Promise<Partial<Task>> {
+    return this.taskRepository.createTask(createTaskDto, user);
   }
 
   async updateTaskStatus(
