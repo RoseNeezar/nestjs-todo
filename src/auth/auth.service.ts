@@ -26,7 +26,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
     const payload: JwtPayload = { username };
-    const accessToken = await this.jwtService.sign(payload);
+    const accessToken = await this.jwtService.sign(payload, {
+      expiresIn: '15min',
+    });
 
     return { accessToken };
   }
